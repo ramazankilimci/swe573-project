@@ -1,0 +1,8 @@
+- task: DockerCompose@0
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscription: 'Dev Subscription(0d35d4f7-c9bd-4b00-ab26-a9e337fb683a)'
+    azureContainerRegistry: '{"loginServer":"medicleshub.azurecr.io", "id" : "/subscriptions/0d35d4f7-c9bd-4b00-ab26-a9e337fb683a/resourceGroups/rg-medicles/providers/Microsoft.ContainerRegistry/registries/medicleshub"}'
+    dockerComposeFile: '**/docker-compose.yml'
+    action: 'Build services'
+    includeLatestTag: true

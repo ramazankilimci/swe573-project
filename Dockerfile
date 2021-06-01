@@ -29,4 +29,7 @@ USER appuser
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 # File wsgi.py was not found in subfolder: 'pro_med'. Please enter the Python path to wsgi file. pythonPath.to.wsgi
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "pubmed_project.wsgi"]
+
+# Based on this: https://markgituma.medium.com/kubernetes-local-to-production-with-django-3-postgres-with-migrations-on-minikube-31f2baa8926e
+# I changed it to test.
+# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "pubmed_project.wsgi"]

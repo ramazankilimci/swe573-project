@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-ENV PYTHONPATH "${PYTHONPATH}:./"
+ENV PYTHONPATH ".:${PYTHONPATH}"
 
 # Install pip requirements
 WORKDIR /app

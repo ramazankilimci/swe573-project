@@ -1,8 +1,51 @@
-import os
 import requests
 import xml.etree.ElementTree as ET
-from .models import Article
+#from .models import Article
 import datetime
+    
+# url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=covid&retmode=json&retmax=500&usehistory=y"
+
+
+# payload={}
+# headers = {}
+
+# response = requests.request("GET", url, headers=headers, data=payload)
+# articles = response.json()
+# web_env = articles['esearchresult']['webenv']
+# query_key = articles['esearchresult']['querykey']
+# print(web_env, query_key)
+
+# count = int(articles['esearchresult']['count'])
+# print(count)
+# retmax = 100
+
+# for retstart in range(300):
+#     url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&"+ \
+#     "WebEnv=" + web_env + \
+#     "&query_key="+ query_key + \
+#     "&rettype=abstract" + \
+#     "&retstart=" + str(retstart) + \
+#     "&retmax=" + str(retmax)
+#     print(url)
+#     payload={}
+#     headers = {}
+#     response = requests.request("POST", url, headers=headers, data=payload)
+#     print(response.content)
+#     print(len(response.content))
+#     retstart += retmax
+
+# url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&"+ \
+# "WebEnv=" + web_env + \
+# "&query_key="+ query_key + \
+# "&rettype=abstract" + \
+# "&retstart=0" + \
+# "&retmax=100"
+# print(url)
+# payload={}
+# headers = {}
+# response = requests.request("POST", url, headers=headers, data=payload)
+# print(response.content)
+# print(len(response.content))
 
 def get_article_ids(term, retmax):
     term = term.replace(" ", "+")
@@ -47,10 +90,10 @@ def get_articles_with_details(term, retmax, retmax_iter):
         headers = {}
         response = requests.request("POST", url, headers=headers, data=payload)
         print("Iteration: ", i)
+
         # Create xml tree using Element Tree.
         try:
             abs_tree = ET.fromstring(response.content)
-        #root=abs_tree.tag
         except Exception as e:
             print("ET Exception: ", e)
             continue
@@ -134,49 +177,8 @@ def get_articles_with_details(term, retmax, retmax_iter):
     
     return all_articles
 
-
-def create_db(term, retmax, retmax_iter):
-    articles = get_articles_with_details(term, retmax, retmax_iter)
-
-    for i in range(len(articles)):
-        if articles[i][2]:
-            Article.objects.create(article_id = articles[i][0],
-            pub_date = articles[i][1],
-            article_title = articles[i][2],
-            article_abstract = articles[i][3],
-            author_list = articles[i][4],
-            keyword_list = articles[i][5],
-            )
-
-
-    query_result = Article.objects.all()
-
-    return query_result
-
-#print(create_db())
-
-
-def update_db(term, retmax):
-    latest_article_id = Article.objects.latest('article_id').article_id
-    new_articles = get_articles_with_details(term, retmax)
-    for i in range(len(new_articles)):
-        if int(new_articles[i][0]) > latest_article_id:
-            Article.objects.create(article_id = new_articles[i][0],
-            pub_date = new_articles[i][1],
-            article_title = new_articles[i][2],
-            article_abstract = new_articles[i][3],
-            author_list = new_articles[i][4],
-            keyword_list = new_articles[i][5],
-            )
-    
-    query_result = Article.objects.all()
-    return query_result
-
-#update_db()
-
-
-# from medicles.models import Article 
-# from medicles import services 
-# db = services 
-# db.get_articles_from_db() 
-
+#print(get_articles_with_details("psychiatric", 20))
+# from medicles import delete
+# t = delete
+# list = t.get_articles_with_details("covid", 50000)
+# len(list)

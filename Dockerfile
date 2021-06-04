@@ -31,5 +31,5 @@ USER appuser
 # File wsgi.py was not found in subfolder: 'pro_med'. Please enter the Python path to wsgi file. pythonPath.to.wsgi
 
 # Based on this: https://markgituma.medium.com/kubernetes-local-to-production-with-django-3-postgres-with-migrations-on-minikube-31f2baa8926e
-# I changed it to test.
-# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "pubmed_project.wsgi"]
+# I changed it to test. Remove comment below whne you push to GitHub.
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "pubmed_project.wsgi"]

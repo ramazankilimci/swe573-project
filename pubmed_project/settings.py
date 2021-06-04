@@ -74,13 +74,14 @@ WSGI_APPLICATION = 'pubmed_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# Change host to 'postgres' when pushing to GitHub.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'medicles',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'postgres',
+        'HOST': 'db',
         'PORT': '5432'
     }
 }

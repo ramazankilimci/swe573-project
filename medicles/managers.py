@@ -11,7 +11,7 @@ class ArticleManager(models.Manager):
             + SearchVector(
                 StringAgg('keyword_list', delimiter = ';'),
                 weight = 'B',
-                config = 'egnlish',
+                config = 'english',
             )   
         )
 

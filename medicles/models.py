@@ -25,11 +25,12 @@ class Article(models.Model):
         return str(self.article_id)
 
     def save(self, *args, **kwargs):
-        self.search_vector = (
+        super().save(*args, **kwargs)
+        Article.objects.update(search_vector = (
             SearchVector('article_abstract', weight = 'A')
             + SearchVector('keyword_list', weight = 'B')
-        )
-        super.save(*args, **kwargs)
+            )
+        ) 
 
 
 

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.fields.related import ManyToManyField
 from medicles.managers import ArticleManager
 
 from django.contrib.postgres.search import SearchVector, SearchVectorField
@@ -22,6 +23,7 @@ class Article(models.Model):
 
     objects = ArticleManager()
 
+
     def __str__(self):
         return str(self.article_id)
 
@@ -34,4 +36,8 @@ class Article(models.Model):
         ) 
 
 
+class Tag(models.Model):
+    article = ManyToManyField(Article)
+    tag_key = models.CharField(blank=True, null=True, max_length=100)
+    tag_value = models.CharField(blank=True, null=True, max_length=100)
 

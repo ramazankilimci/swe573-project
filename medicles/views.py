@@ -6,7 +6,7 @@ from django.http.response import Http404
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from medicles.models import Article
+from medicles.models import Article, Tag
 from .forms import TagForm
 # Create your views here.
 
@@ -24,8 +24,10 @@ def search(request):
     context = {'articles': articles}
     #print(context)
 
-    return render(request, 'medicles/search_results.html', context)
 
+    return render(request, 'medicles/search_results.html', {'articles': articles}) # add context variable if you want to go back
+
+''' Working tag form. Simple, just adds one field to Article model.
 def add_tag(request, article_id):
     if request.method =='POST':
         form = TagForm(request.POST)
@@ -40,3 +42,21 @@ def add_tag(request, article_id):
         form = TagForm()
 
     return render(request, 'medicles/tag_create.html', {'form': form, 'article_id': article_id})
+'''
+
+def add_tag(request, article_id):
+    if request.method =='POST':
+        form = TagForm(request.POST)
+        if form.is_valid():
+            article_will_be_updated = Article.objects.get(pk=article_id)
+            tag = Tag(tag_key = form.cleaned_data['tag_key'],
+                    tag_value = form.cleaned_data['tag_value']
+                    )
+            tag.save()
+            tag.article.add(article_will_be_updated)
+            return HttpResponseRedirect('/thanks')
+
+    else:
+        form = TagForm()
+
+    return render(request, 'medicles/tag_create.html', {'form': form, 'article_id': article_id})                                                   

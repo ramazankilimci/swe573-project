@@ -1,2 +1,17 @@
+{% extends 'medicles/base.html' %}
+{% load static %}
 
-<h1>Test</h1>
+<link rel="stysheet" type="text/css" href="{% static 'medicles/style.css'%}"
+
+{% block title %}Home{% endblock title%}
+
+{% block content %}
+<div class="text-center">
+<h1>Homepage</h1>
+<form class="form-inline mt-2 mt-md-0" action="{% url 'medicles:search' %}" method="get">
+    <input name="q" class="from-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+    <button type="submit" class="btn btn-success large">Search</button>
+</form>
+</div>
+{% endblock content %}
+

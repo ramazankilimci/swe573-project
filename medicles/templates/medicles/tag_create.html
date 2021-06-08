@@ -1,0 +1,5 @@
+<form action="{% url 'medicles:tag' article_id %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>

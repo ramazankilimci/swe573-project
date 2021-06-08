@@ -5,6 +5,7 @@ app_name='medicles'
 
 urlpatterns = [
     path('', views.index, name='index' ),
-    path('search/', views.search, name='search')
+    path('search/', views.search, name='search'),
+    path('tag/<int:article_id>/', views.add_tag, name='tag')
 ]
 

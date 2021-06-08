@@ -18,6 +18,7 @@ class Article(models.Model):
     author_list = models.TextField(blank=True, null=True)
     keyword_list = models.TextField(blank=True, null=True)
     search_vector = SearchVectorField(null=True, )
+    tags = models.TextField(blank=True, null=True)
 
     objects = ArticleManager()
 

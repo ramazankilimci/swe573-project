@@ -1,8 +1,9 @@
-import os
+
 import requests
 import xml.etree.ElementTree as ET
 from .models import Article
 import datetime
+import json
 
 def get_article_ids(term, retmax):
     term = term.replace(" ", "+")
@@ -134,7 +135,6 @@ def get_articles_with_details(term, retmax, retmax_iter):
     
     return all_articles
 
-
 def create_db(term, retmax, retmax_iter):
     articles = get_articles_with_details(term, retmax, retmax_iter)
 
@@ -152,9 +152,7 @@ def create_db(term, retmax, retmax_iter):
     query_result = Article.objects.all()
 
     return query_result
-
 #print(create_db())
-
 
 def update_db(term, retmax):
     latest_article_id = Article.objects.latest('article_id').article_id
@@ -171,12 +169,29 @@ def update_db(term, retmax):
     
     query_result = Article.objects.all()
     return query_result
-
 #update_db()
-
 
 # from medicles.models import Article 
 # from medicles import services 
 # db = services 
 # db.get_articles_from_db() 
 
+class Wikidata():
+    def get_wikidata_url_by_name(term):
+        url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&search=" + term + "&language=en"
+        payload = {}
+        headers = {}
+        response = requests.get(url, headers=headers, data=payload)
+        return json.loads(response.text)
+
+    def create_tag_data(self, term):
+        tag_list = self.get_wikidata_url_by_name(term)
+        for tag in tag_list['search']:
+            if len(tag['label'].split()) < 4:
+                print('label:', tag['label'], 'url:', tag['concepturi'])
+
+# from medicles.services import Wikidata 
+# a=Wikidata
+# b=a.get_wikidata_url_by_name('covid 19')
+# b=Wikidata.create_tag_data(Wikidata, 'covid')
+# b=Wikidata.create_tag_data(Wikidata, 'traumatic')

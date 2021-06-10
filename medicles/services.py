@@ -1,7 +1,7 @@
 
 import requests
 import xml.etree.ElementTree as ET
-#from .models import Article, Tag
+from .models import Article, Tag
 import datetime
 import json
 

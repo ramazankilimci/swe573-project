@@ -5,8 +5,9 @@ from django.http import response
 from django.http.response import Http404
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from medicles.models import Article, Tag
+from medicles.services import Wikidata
 from .forms import TagForm
 # Create your views here.
 
@@ -47,11 +48,19 @@ def add_tag(request, article_id):
 def add_tag(request, article_id):
     if request.method =='POST':
         form = TagForm(request.POST)
+        
+        tag_request_from_browser = ''
         if form.is_valid():
             article_will_be_updated = Article.objects.get(pk=article_id)
-            tag = Tag(tag_key = form.cleaned_data['tag_key'],
-                    tag_value = form.cleaned_data['tag_value']
-                    )
+            tag_request_from_browser = form.cleaned_data['tag_key'].split(':')
+            tag_key = tag_request_from_browser[0]
+            tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[1]
+            # tag = Tag(tag_key = form.cleaned_data['tag_key'],
+            #         tag_value = form.cleaned_data['tag_value']
+            #         )
+            tag = Tag(tag_key = tag_key,
+                    tag_value = tag_value
+                )
             tag.save()
             tag.article.add(article_will_be_updated)
             return HttpResponseRedirect('/thanks')
@@ -60,3 +69,13 @@ def add_tag(request, article_id):
         form = TagForm()
 
     return render(request, 'medicles/tag_create.html', {'form': form, 'article_id': article_id})                                                   
+
+def ajax_load_tag(request):
+    if request.is_ajax():
+        tag_query = request.GET.get('tag_query', '')
+        tags = Wikidata.get_tag_data(Wikidata, tag_query)
+
+        data = {
+            'tags': tags,
+        }
+        return JsonResponse(data)

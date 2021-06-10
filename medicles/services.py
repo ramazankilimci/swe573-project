@@ -1,7 +1,7 @@
 
 import requests
 import xml.etree.ElementTree as ET
-from .models import Article
+#from .models import Article, Tag
 import datetime
 import json
 
@@ -184,14 +184,30 @@ class Wikidata():
         response = requests.get(url, headers=headers, data=payload)
         return json.loads(response.text)
 
+    def get_tag_data(self, term):
+        tag_list = self.get_wikidata_url_by_name(term)
+        results = []
+        for tag in tag_list['search']:
+            #if len(tag['label'].split()) < 4:
+                results.append(tag['label'] + " : " + tag['id'])
+            #print(tag)
+        return results
+        
+'''
     def create_tag_data(self, term):
         tag_list = self.get_wikidata_url_by_name(term)
         for tag in tag_list['search']:
             if len(tag['label'].split()) < 4:
+                Tag.objects.create(tag_key = tag['label'],
+                                tag_value = tag['concepturi']
+                )
                 print('label:', tag['label'], 'url:', tag['concepturi'])
+'''
 
-# from medicles.services import Wikidata 
+
+
+# from medicles.services import Wikidata
 # a=Wikidata
 # b=a.get_wikidata_url_by_name('covid 19')
 # b=Wikidata.create_tag_data(Wikidata, 'covid')
-# b=Wikidata.create_tag_data(Wikidata, 'traumatic')
+# b=Wikidata.get_tag_data(Wikidata, 'traumatic')

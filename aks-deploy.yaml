@@ -80,7 +80,7 @@ spec:
         image: medicleshub.azurecr.io/ramazankilimciswe573project_promed:latest
         imagePullPolicy: Always
         command: ["/bin/bash", "-c"]
-        args: ["python manage.py migrate; gunicorn pubmed_project.wsgi:application --bind 0.0.0.0:8000"]
+        args: ["python manage.py makemigrations; python manage.py migrate; gunicorn pubmed_project.wsgi:application --bind 0.0.0.0:8000"]
         resources:
           limits:
             memory: "512Mi"

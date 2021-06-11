@@ -92,6 +92,7 @@ DATABASES = {
 }
 
 # This config uses Azure PostgresDB with local runserver.
+# Change running in local environment.
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',

@@ -2,6 +2,18 @@
 .vscode
 .vscode/
 
+# Unneeded files
+med-web.yaml
+postgres-deploy.yaml
+azure-pipelines.yaml
+
+# Search screenshots
+search-screen-1.png
+search-screen-2.png
+
+# Debug files
+docker-compose.debug.yml
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

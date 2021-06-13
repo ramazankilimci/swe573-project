@@ -30,12 +30,28 @@ class ViewTests(TestCase):
 class ServiceTests(TestCase):
 
     # Test PubMed ESearch API Article ID function
-    def test_esearch_get_id_is_successful(self):
-        c = services
+    def test_esearch_get_article_id_is_successful(self):
+        srv_obj = services
         term = 'covid'
         retmax = 10
-        response = c.get_article_ids(term, retmax)
+        response = srv_obj.get_article_ids(term, retmax)
         self.assertEqual(len(response), retmax)
+
+    def test_efetch_get_article_detail_is_successful(self):
+        srv_obj = services
+        term = 'covid'
+        retmax = 50
+        retmax_iter = 25
+        response = srv_obj.get_articles_with_details(term, retmax, retmax_iter)
+        self.assertGreaterEqual(len(response), retmax_iter)
+
+    def test_create_db_records_is_successful(self):
+        srv_obj = services
+        term = 'covid'
+        retmax = 50
+        retmax_iter = 25
+        response = srv_obj.create_db(term, retmax, retmax_iter)
+        self.assertAlmostEquals(len(response), retmax, delta=10)
         
 class ArticleTests(TestCase):
     @classmethod

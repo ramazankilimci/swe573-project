@@ -1,19 +1,23 @@
+from django.contrib.auth import authenticate, login
 from medicles.forms import TagForm
-from typing import ContextManager
 from django.core import paginator
-from django.http import response
 from django.http.response import Http404
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
+from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from medicles.models import Article, Tag
 from medicles.services import Wikidata
-from .forms import TagForm
+from .forms import SingupForm, TagForm
+from django.contrib.auth.decorators import login_required
+
 # Create your views here.
+
+def home(request):
+    return render(request, 'medicles/home.html')
 
 def index(request):
     #context = "Welcome to medicles!"
     return render(request, 'medicles/index.html')
+
 
 def search(request):
     search_term = request.GET.get('q', None)
@@ -44,7 +48,7 @@ def add_tag(request, article_id):
 
     return render(request, 'medicles/tag_create.html', {'form': form, 'article_id': article_id})
 '''
-
+@login_required
 def add_tag(request, article_id):
     if request.method =='POST':
         form = TagForm(request.POST)
@@ -79,3 +83,21 @@ def ajax_load_tag(request):
             'tags': tags,
         }
         return JsonResponse(data)
+
+def signup(request):
+    if request.method == 'POST':
+        form = SingupForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            print(username, password)
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect('medicles:index')
+    else:
+        print("not working")
+        form = SingupForm()
+    return render(request, 'medicles/signup.html', {'form': form})
+
+

@@ -57,7 +57,7 @@ ROOT_URLCONF = 'pubmed_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,29 +78,29 @@ WSGI_APPLICATION = 'pubmed_project.wsgi.application'
 
 # Change host to 'postgres' when pushing to GitHub.
 # Change host to 'db' when using local docker.
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'medicles',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'postgres',
-        'PORT': '5432'
-    }
-}
-
-# This config uses Azure PostgresDB with local runserver.
-# Change running in local environment.
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
 #         'NAME': 'medicles',
 #         'USER': 'postgres',
-#         'PASSWORD': 'Moda2020!',
-#         'HOST': 'djangodb.postgres.database.azure.com',
+#         'PASSWORD': 'postgres',
+#         'HOST': 'postgres',
 #         'PORT': '5432'
 #     }
 # }
+
+# This config uses Azure PostgresDB with local runserver.
+# Change running in local environment.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'medicles',
+        'USER': 'postgres',
+        'PASSWORD': 'Moda2020!',
+        'HOST': 'djangodb.postgres.database.azure.com',
+        'PORT': '5432'
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -145,3 +145,9 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Added for sending email
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+LOGIN_REDIRECT_URL = 'medicles:index'
+LOGOUT_REDIRECT_URL = 'medicles:index'

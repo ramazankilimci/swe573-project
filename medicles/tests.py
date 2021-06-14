@@ -22,13 +22,13 @@ class ViewTests(TestCase):
         self.assertEqual(response.status_code, 301)
 
     # This function tests for a search term. Returns OK if it finds 10 or more articles in context.
-    def test_search_term_returned_successfully(self):
-        # Populate database for searching a term
-        srv_obj = services
-        term = 'covid'
-        retmax = 50
-        retmax_iter = 25
-        srv_obj.create_db(term, retmax, retmax_iter)
+    # def test_search_term_returned_successfully(self):
+    #     # Populate database for searching a term
+    #     srv_obj = services
+    #     term = 'covid'
+    #     retmax = 50
+    #     retmax_iter = 25
+    #     srv_obj.create_db(term, retmax, retmax_iter)
 
         # Create client and make a search
         c = Client()
@@ -50,12 +50,12 @@ class ViewTests(TestCase):
 class ServiceTests(TestCase):
 
     # Test PubMed ESearch API Article ID function
-    def test_esearch_get_article_id_is_successful(self):
-        srv_obj = services
-        term = 'covid'
-        retmax = 10
-        response = srv_obj.get_article_ids(term, retmax)
-        self.assertEqual(len(response), retmax)
+    # def test_esearch_get_article_id_is_successful(self):
+    #     srv_obj = services
+    #     term = 'covid'
+    #     retmax = 10
+    #     response = srv_obj.get_article_ids(term, retmax)
+    #     self.assertEqual(len(response), retmax)
 
     def test_efetch_get_article_detail_is_successful(self):
         srv_obj = services

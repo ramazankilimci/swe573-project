@@ -6,7 +6,7 @@ pool: Default
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '$(PYTHON_VERSION)'
+    versionSpec: 3.9.5
     architecture: 'x64'
 
 - task: PythonScript@0

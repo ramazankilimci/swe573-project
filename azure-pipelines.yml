@@ -1,13 +1,7 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'ubuntu-latest'
-strategy:
-  matrix:
-    Python395:
-      PYTHON_VERSION: '3.9.5'
-  maxParallel: 1
+pool: Default
 
 steps:
 - task: UsePythonVersion@0

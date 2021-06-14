@@ -21,5 +21,6 @@ steps:
   displayName: 'Compile languages'
 
 - script: |
-    python3 -m pytest --cov=medicles --cov-report=medicles-test.xml
+    python3 manage.py test
+  condition: succeededOrFailed()
   displayName: 'Run tests'

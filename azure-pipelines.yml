@@ -17,9 +17,9 @@ steps:
   displayName: 'Install prerequisites'
 
 - script: |
-    python manage.py compilemessages --ignore venv
+    python3 manage.py compilemessages --ignore venv
   displayName: 'Compile languages'
 
 - script: |
-    python -m pytest --cov=medicles --cov-report=medicles-test.xml
+    python3 -m pytest --cov=medicles --cov-report=medicles-test.xml
   displayName: 'Run tests'

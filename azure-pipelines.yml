@@ -21,5 +21,6 @@ steps:
   displayName: 'Compile languages'
 
 - script: |
-    python3 manage.py test --testrunner xmlrunner.extra.djangotestrunner.XMLTestRunner --no-input
+    python3 manage.py test
+  condition: succeededOrFailed()
   displayName: 'Run tests'

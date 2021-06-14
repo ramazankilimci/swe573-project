@@ -1,8 +1,31 @@
-- task: DockerCompose@0
+trigger:
+- master
+- task: UsePythonVersion@0
   inputs:
-    containerregistrytype: 'Azure Container Registry'
-    azureSubscription: 'Dev Subscription(0d35d4f7-c9bd-4b00-ab26-a9e337fb683a)'
-    azureContainerRegistry: '{"loginServer":"medicleshub.azurecr.io", "id" : "/subscriptions/0d35d4f7-c9bd-4b00-ab26-a9e337fb683a/resourceGroups/rg-medicles/providers/Microsoft.ContainerRegistry/registries/medicleshub"}'
-    dockerComposeFile: '**/docker-compose.yml'
-    action: 'Build services'
-    includeLatestTag: true
+    versionSpec: '$(pythonVersion)'
+  displayName: 'Use Python $(pythonVersion)'
+- script: |
+    python -m venv antenv
+    source antenv/bin/activate
+    python -m pip install --upgrade pip
+    pip install setup
+    pip install -r requirements.txt
+  workingDirectory: $(projectRoot)
+  displayName: "Install requirements"
+- script: |
+    pip install setup
+    pip install -r $(projectRoot)/requirements.txt
+    pip install pytest
+    pytest Tests/unit_tests --junitxml=$(System.DefaultWorkingDirectory)/TestResults/test-results-unit.xml
+    pip install pycmd
+    py.cleanup Tests/
+  displayName: 'Run unit tests'
+
+- task: PublishTestResults@2
+  inputs:        
+    searchFolder: $(System.DefaultWorkingDirectory)
+    testResultsFiles: '**/test-*.xml'
+  displayName: 'Publish test results'
+
+- publish: $(System.DefaultWorkingDirectory)/Tests
+  artifact: tests

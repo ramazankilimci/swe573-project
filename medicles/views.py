@@ -11,9 +11,6 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
-def home(request):
-    return render(request, 'medicles/home.html')
-
 def index(request):
     #context = "Welcome to medicles!"
     return render(request, 'medicles/index.html')

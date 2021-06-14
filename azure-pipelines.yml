@@ -1,31 +1,47 @@
 trigger:
-  - master
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(pythonVersion)'
-    displayName: 'Use Python $(pythonVersion)'
-  - script: |
-      python -m venv antenv
-      source antenv/bin/activate
-      python -m pip install --upgrade pip
-      pip install setup
-      pip install -r requirements.txt
-    workingDirectory: $(projectRoot)
-    displayName: "Install requirements"
-  - script: |
-      pip install setup
-      pip install -r $(projectRoot)/requirements.txt
-      pip install pytest
-      pytest Tests/unit_tests --junitxml=$(System.DefaultWorkingDirectory)/TestResults/test-results-unit.xml
-      pip install pycmd
-      py.cleanup Tests/
-    displayName: 'Run unit tests'
+- master
 
-  - task: PublishTestResults@2
-    inputs:        
-      searchFolder: $(System.DefaultWorkingDirectory)
-      testResultsFiles: '**/test-*.xml'
-    displayName: 'Publish test results'
+pool:
+  vmImage: 'ubuntu-latest'
+strategy:
+  matrix:
+    Python395:
+      PYTHON_VERSION: '3.9.5'
+  maxParallel: 1
 
-  - publish: $(System.DefaultWorkingDirectory)/Tests
-    artifact: tests
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(PYTHON_VERSION)'
+    architecture: 'x64'
+
+- task: PythonScript@0
+  displayName: 'Export project path'
+  inputs:
+    scriptSource: 'inline'
+    script: |
+      """Search all subdirectories for `manage.py`."""
+      from glob import iglob
+      from os import path
+      # Python >= 3.5
+      manage_py = next(iglob(path.join('**', 'manage.py'), recursive=True), None)
+      if not manage_py:
+          raise SystemExit('Could not find a Django project')
+      project_location = path.dirname(path.abspath(manage_py))
+      print('Found Django project in', project_location)
+      print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
+
+- script: |
+    python -m pip install --upgrade pip setuptools wheel
+    pip install -r requirements.txt
+    pip install -r requirements-test.txt
+    sudo apt-get install -y gettext
+  displayName: 'Install prerequisites'
+
+- script: |
+    python manage.py compilemessages --ignore venv
+  displayName: 'Compile languages'
+
+- script: |
+    python -m pytest --cov=your_app --cov-report=xml
+  displayName: 'Run tests'

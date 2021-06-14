@@ -37,5 +37,5 @@ steps:
   displayName: 'Compile languages'
 
 - script: |
-    python -m pytest --cov=your_app --cov-report=xml
+    python -m pytest --cov=medicles --cov-report=medicles-test.xml
   displayName: 'Run tests'

@@ -24,17 +24,16 @@ steps:
     sudo apt-get install -y gettext
   displayName: 'Install prerequisites'
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      pip3.9 install pytest-django
-      
-      python3.9 -m pytest --junitxml=./TestResults/test-results.xml
+- script: |
+    pushd '$(projectRoot)'
+    python3.9 manage.py test --testrunner xmlrunner.extra.djangotestrunner.XMLTestRunner --no-input
+  condition: succeededOrFailed()
+  displayName: 'Run tests'
 
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: '**/test-results.xml'
+    testResultsFiles: '**/TEST-*.xml'
 
 - task: PublishBuildArtifacts@1
   inputs:

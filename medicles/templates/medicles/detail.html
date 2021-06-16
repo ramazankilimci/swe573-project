@@ -4,6 +4,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
 <style>
 body {
   margin: 0;
@@ -119,9 +123,8 @@ form.example::after {
 </div>
 
 <div class="w3-margin">
-<h1 class="w3-container">Search Results</h1>
+<h1 class="w3-container">Specific Article</h1>
 
-{% for article in articles %}
     <div class="w3-container">
         
         <h2 class="w3-text-teal"><a href="{% url 'medicles:detail' article.article_id %}">{{ article.article_title}}</h2>
@@ -131,10 +134,52 @@ form.example::after {
         {% for tag_obj in article.tag_set.all %}
             <span><a href="{{tag_obj.tag_value}}" class="w3-button w3-round-xlarge w3-yellow w3-padding-medium">{{tag_obj.tag_key}} </a></span>
         {% endfor %}
-        <button type="button" class="w3-white w3-border w3-border-white"><a  class="w3-teal w3-button w3-round-xxlarge" href="/tag/{{article.article_id}}">Add Tag</a></button>
         </p>
-        <p><strong class="w3-text-gray">Rank:</strong> {{article.rank}}</p>
-        <hr>
     </div>
-{% endfor %}
 </div>
+
+{% if user.is_authenticated %}
+    <div class="w3-container w3-container-teal  w3-margin-left">
+    <h4 title="Tag me" class="w3-text-teal w3-left w3-text-opacity">Tag your selected either using Wikidata tags or using your own tags</h4>
+    </div>
+<form action="{% url 'medicles:detail' article.article_id %}" method="post" class="w3-container">
+    {% csrf_token %}
+    <div class="w3-margin-left w3-padding-24">
+    
+    <label for="tag_key"><b></b></label>
+    <input type="text" placeholder="Search tag from Wikidata.." name="tag_key" id="id_tag_key" class="w3-left-align w3-button w3-white w3-border w3-border-teal w3-round-xxlarge w3-hover-gray" style="width:60%">
+    <br><br>
+    <label for="user_def_tag_key"><b></b></label>
+    <input type="text" placeholder="Enter tag name or leave it empty for Wikidata tags.." name="user_def_tag_key" id="id_user_def_tag_key" class="w3-left-align w3-button w3-white w3-border w3-border-teal w3-round-xxlarge w3-hover-gray" style="width:60%">
+    
+    <input type="submit" value="Add" class="w3-teal w3-button w3-round-xxlarge" style="width:10%">
+    </div>
+</form>
+{% else %}
+    <div class="w3-container w3-container-teal  w3-margin-left">
+    <h4 title="Tag me" class="w3-text-teal w3-left w3-text-opacity">Please <a href="{% url 'medicles:login' %}">login</a> to tag articles.</h4>
+    </div>
+{% endif %}
+
+
+<script type="text/javascript">
+jQuery(function() {
+    $("#id_tag_key").on('keyup', function(){
+        let value = $(this).val();
+        $.ajax({
+            url: "{% url 'medicles:ajax_load_tag' %}",
+            data: {
+              'tag_query': value 
+            },
+            dataType: 'json',
+            success: function (data) {
+                let tags = data.tags;
+                $("#id_tag_key").autocomplete({
+                source: tags,
+                minLength: 2 
+                });       
+            }
+        });        
+    });
+  });
+</script>

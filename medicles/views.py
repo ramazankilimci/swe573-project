@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from medicles.forms import TagForm
 from django.core import paginator
 from django.http.response import Http404
@@ -45,6 +46,16 @@ def add_tag(request, article_id):
 
     return render(request, 'medicles/tag_create.html', {'form': form, 'article_id': article_id})
 '''
+
+def detail(request, article_id):
+    article = Article.objects.get(pk=article_id)
+    article = get_object_or_404(Article, pk=article_id)
+
+    add_tag(request, article_id)
+
+    return render(request, 'medicles/detail.html', {'article': article})
+
+
 @login_required
 def add_tag(request, article_id):
     if request.method =='POST':
@@ -55,16 +66,42 @@ def add_tag(request, article_id):
             article_will_be_updated = Article.objects.get(pk=article_id)
             tag_request_from_browser = form.cleaned_data['tag_key'].split(':')
             tag_key = tag_request_from_browser[0]
-            tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[1]
-            # tag = Tag(tag_key = form.cleaned_data['tag_key'],
-            #         tag_value = form.cleaned_data['tag_value']
-            #         )
-            tag = Tag(tag_key = tag_key,
-                    tag_value = tag_value
-                )
-            tag.save()
-            tag.article.add(article_will_be_updated)
-            return HttpResponseRedirect('/thanks')
+            user_def_tag_key = form.cleaned_data['user_def_tag_key']
+            if tag_key and user_def_tag_key:
+                tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[1]
+                # tag = Tag(tag_key = form.cleaned_data['tag_key'],
+                #         tag_value = form.cleaned_data['tag_value']
+                #         )
+                tag = Tag(tag_key = user_def_tag_key,
+                        tag_value = tag_value
+                    )
+                tag.save()
+                tag.article.add(article_will_be_updated)
+                #return HttpResponseRedirect('medicles:index')
+            elif not user_def_tag_key:
+                tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[1]
+                # tag = Tag(tag_key = form.cleaned_data['tag_key'],
+                #         tag_value = form.cleaned_data['tag_value']
+                #         )
+                tag = Tag(tag_key = tag_key,
+                        tag_value = tag_value
+                    )
+                tag.save()
+                tag.article.add(article_will_be_updated)
+                #return HttpResponseRedirect('medicles:index')
+            elif not tag_key:
+                tag_value = ''
+                # tag = Tag(tag_key = form.cleaned_data['tag_key'],
+                #         tag_value = form.cleaned_data['tag_value']
+                #         )
+                tag = Tag(tag_key = user_def_tag_key,
+                        tag_value = tag_value
+                    )
+                tag.save()
+                tag.article.add(article_will_be_updated)
+                #return HttpResponseRedirect('medicles:index')
+            else:
+                pass
 
     else:
         form = TagForm()

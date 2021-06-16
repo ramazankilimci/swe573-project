@@ -11,6 +11,8 @@ urlpatterns = [
     # Search page. Results are shown in this page
     path('search/', views.search, name='search'),
 
+    path('article/<int:article_id>/', views.detail, name='detail'),
+
     # Tag detail page. Tagging operations are done in here
     path('tag/<int:article_id>/', views.add_tag, name='tag'),
 

@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django.forms import fields
 
 class TagForm(forms.Form):
-    tag_key = forms.CharField(label='Tag Key', max_length=100)
-    #tag_value = forms.CharField(label='Tag Value', max_length=100)
+    tag_key = forms.CharField(label='Tag Key', max_length=100, required=False)
+    user_def_tag_key = forms.CharField(label='User Tag Value', max_length=100, required=False)
     
 class SingupForm(UserCreationForm):
     email = forms.EmailField(max_length=100, help_text="Please provide valid email address.")

@@ -21,7 +21,7 @@ steps:
     script: |
       pip3 install pytest-django
       
-      python3 -m pytest --junitxml=./TestResults/test-results.xml
+      python3.9 -m pytest --junitxml=./TestResults/test-results.xml
 
 - task: PublishTestResults@2
   inputs:

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.fields.related import ManyToManyField
 from medicles.managers import ArticleManager
@@ -38,6 +39,7 @@ class Article(models.Model):
 
 class Tag(models.Model):
     article = ManyToManyField(Article)
-    tag_key = models.CharField(blank=True, null=True, max_length=100)
+    user = ManyToManyField(User)
+    tag_key = models.CharField(unique=True, blank=True, null=True, max_length=100)
     tag_value = models.CharField(blank=True, null=True, max_length=100)
 

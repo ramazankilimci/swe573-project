@@ -9,6 +9,8 @@ from medicles.models import Article, Tag
 from medicles.services import Wikidata
 from .forms import SingupForm, TagForm
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db import IntegrityError
 
 # Create your views here.
 
@@ -51,62 +53,84 @@ def detail(request, article_id):
     article = Article.objects.get(pk=article_id)
     article = get_object_or_404(Article, pk=article_id)
 
-    add_tag(request, article_id)
+    alert_flag = add_tag(request, article_id)
+    print(alert_flag)
 
-    return render(request, 'medicles/detail.html', {'article': article})
-
+    return render(request, 'medicles/detail.html', {'article': article, 'alert_flag': alert_flag})
 
 @login_required
 def add_tag(request, article_id):
+    alert_flag = False
     if request.method =='POST':
         form = TagForm(request.POST)
         
         tag_request_from_browser = ''
         if form.is_valid():
-            article_will_be_updated = Article.objects.get(pk=article_id)
+            article_will_be_updated = Article.objects.get(pk=article_id) # Gets the article that will be associated
+            user_will_be_updated = User.objects.get(pk=request.user.id)  # Gets the user that will be associated
+            print(request.user.id)
             tag_request_from_browser = form.cleaned_data['tag_key'].split(':')
             tag_key = tag_request_from_browser[0]
             user_def_tag_key = form.cleaned_data['user_def_tag_key']
+            
+            # If Wikidata tag_key and user defined user_def_tag_key exists. It will create user_def_tag_key.
             if tag_key and user_def_tag_key:
-                tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[1]
-                # tag = Tag(tag_key = form.cleaned_data['tag_key'],
-                #         tag_value = form.cleaned_data['tag_value']
-                #         )
-                tag = Tag(tag_key = user_def_tag_key,
-                        tag_value = tag_value
-                    )
-                tag.save()
-                tag.article.add(article_will_be_updated)
-                #return HttpResponseRedirect('medicles:index')
+                try:
+                    tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[1]
+                    # tag = Tag(tag_key = form.cleaned_data['tag_key'],
+                    #         tag_value = form.cleaned_data['tag_value']
+                    #         )
+                    tag = Tag(tag_key = user_def_tag_key,
+                            tag_value = tag_value
+                        )
+                    tag.save()
+                    tag.article.add(article_will_be_updated)
+                    tag.user.add(user_will_be_updated)
+                except IntegrityError :
+                    alert_flag = True
+                    #return HttpResponseRedirect('medicles:index')
+
+            # If user_def_tag_key does not exist. It will create Wikidata tag_key.
             elif not user_def_tag_key:
-                tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[1]
-                # tag = Tag(tag_key = form.cleaned_data['tag_key'],
-                #         tag_value = form.cleaned_data['tag_value']
-                #         )
-                tag = Tag(tag_key = tag_key,
-                        tag_value = tag_value
-                    )
-                tag.save()
-                tag.article.add(article_will_be_updated)
-                #return HttpResponseRedirect('medicles:index')
+                try:
+                    tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[1]
+                    # tag = Tag(tag_key = form.cleaned_data['tag_key'],
+                    #         tag_value = form.cleaned_data['tag_value']
+                    #         )
+                    tag = Tag(tag_key = tag_key,
+                            tag_value = tag_value
+                        )
+                    tag.save()
+                    tag.article.add(article_will_be_updated)
+                    tag.user.add(user_will_be_updated)
+                    #return HttpResponseRedirect('medicles:index')
+                except IntegrityError:
+                    alert_flag = True
+            
+            # If Wikidata tag key does not exist. User defined user_def_tag_key will be created.
             elif not tag_key:
-                tag_value = ''
-                # tag = Tag(tag_key = form.cleaned_data['tag_key'],
-                #         tag_value = form.cleaned_data['tag_value']
-                #         )
-                tag = Tag(tag_key = user_def_tag_key,
-                        tag_value = tag_value
-                    )
-                tag.save()
-                tag.article.add(article_will_be_updated)
-                #return HttpResponseRedirect('medicles:index')
+                try:
+                    tag_value = ''
+                    # tag = Tag(tag_key = form.cleaned_data['tag_key'],
+                    #         tag_value = form.cleaned_data['tag_value']
+                    #         )
+                    tag = Tag(tag_key = user_def_tag_key,
+                            tag_value = tag_value
+                        )
+                    tag.save()
+                    tag.article.add(article_will_be_updated)
+                    tag.user.add(user_will_be_updated)
+                    #return HttpResponseRedirect('medicles:index')
+                except IntegrityError:
+                    alert_flag = True
             else:
-                pass
+               pass
 
     else:
         form = TagForm()
 
-    return render(request, 'medicles/tag_create.html', {'form': form, 'article_id': article_id})                                                   
+    return alert_flag
+    # return render(request, 'medicles/tag_create.html', {'form': form, 'article_id': article_id})                                                   
 
 def ajax_load_tag(request):
     if request.is_ajax():

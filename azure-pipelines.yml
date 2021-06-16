@@ -16,8 +16,20 @@ steps:
   inputs:
     versionSpec: 3.9.5
     architecture: 'x64'
+- task: CmdLine@2
+  inputs:
+    script: |
+      pip3 install pytest-django
+      
+      pytest --junitxml=./TestResults/test-results.xml
 
-- script: |
-    python3 manage.py test
-  condition: succeededOrFailed()
-  displayName: 'Run tests'
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/test-results.xml'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'

@@ -4,21 +4,18 @@ trigger:
 pool: Default
 
 steps:
+- task: DockerCompose@0
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscription: 'Dev Subscription(0d35d4f7-c9bd-4b00-ab26-a9e337fb683a)'
+    azureContainerRegistry: '{"loginServer":"medicleshub.azurecr.io", "id" : "/subscriptions/0d35d4f7-c9bd-4b00-ab26-a9e337fb683a/resourceGroups/rg-medicles/providers/Microsoft.ContainerRegistry/registries/medicleshub"}'
+    dockerComposeFile: '**/docker-compose.yml'
+    action: 'Run services'
+
 - task: UsePythonVersion@0
   inputs:
     versionSpec: 3.9.5
     architecture: 'x64'
-
-- script: |
-    python -m pip install --upgrade pip setuptools wheel
-    pip install -r requirements.txt
-    pip install -r requirements-test.txt
-    sudo apt-get install -y gettext
-  displayName: 'Install prerequisites'
-
-- script: |
-    python3 manage.py compilemessages --ignore venv
-  displayName: 'Compile languages'
 
 - script: |
     python3 manage.py test

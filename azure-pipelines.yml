@@ -29,6 +29,7 @@ steps:
 - script: |
     pushd '$(projectRoot)'
     python3.9 manage.py test --testrunner xmlrunner.extra.djangotestrunner.XMLTestRunner --no-input
+  continueOnError: true
   displayName: 'Run tests'
 
 - task: PublishTestResults@2

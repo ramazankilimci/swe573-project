@@ -18,6 +18,25 @@ steps:
     architecture: 'x64'
 
 - script: |
-    python3 manage.py test
+    python3.9 -m pip install --upgrade pip setuptools wheel
+    pip3.9 install -r requirements.txt
+    pip3.9 install -r requirements-test.txt
+    sudo apt-get install -y gettext
+  displayName: 'Install prerequisites'
+
+- script: |
+    pushd '$(projectRoot)'
+    python3.9 manage.py test --testrunner xmlrunner.extra.djangotestrunner.XMLTestRunner --no-input
   condition: succeededOrFailed()
   displayName: 'Run tests'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/TEST-*.xml'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'

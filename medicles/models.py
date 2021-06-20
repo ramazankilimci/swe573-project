@@ -14,7 +14,8 @@ from django.contrib.postgres.search import SearchVector, SearchVectorField
 class Article(models.Model):
     #article_id = models.BigIntegerField()
     article_id = models.AutoField(primary_key=True)
-    pub_date = models.DateTimeField()
+    #pub_date = models.DateTimeField()
+    pub_date = models.TextField(blank=True, null=True)
     article_title = models.TextField(blank=True, null=True)
     article_abstract = models.TextField(blank=True, null=True)
     author_list = models.TextField(blank=True, null=True)

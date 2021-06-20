@@ -72,6 +72,7 @@ class ServiceTests(TestCase):
         response = srv_obj.get_article_ids(term, retmax)
         self.assertEqual(len(response), retmax)
 
+    # This is failing when running automated tests.
     # def test_efetch_get_article_detail_is_successful(self):
     #     srv_obj = services
     #     term = 'covid'
@@ -80,6 +81,7 @@ class ServiceTests(TestCase):
     #     response = srv_obj.get_articles_with_details(term, retmax, retmax_iter)
     #     self.assertGreaterEqual(len(response), retmax_iter)
 
+    # Test create_db() function is performing as expected.
     def test_create_db_records_is_successful(self):
         srv_obj = services
         term = 'covid'

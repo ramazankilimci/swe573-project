@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from .models import Article, Tag
 import datetime
 import json
+from django.db import IntegrityError
 
 def get_article_ids(term, retmax):
     term = term.replace(" ", "+")
@@ -117,8 +118,8 @@ def get_articles_with_details(term, retmax, retmax_iter):
                     year = str(date2.find('Year').text)
                     month = str(date2.find('Month').text)
                     day = str(date2.find("Day").text)
-                    pubdate = year + "/" + month + "/" + day + " 00:00"
-                    pubdate = datetime.datetime.strptime(pubdate, '%Y/%m/%d %H:%M')
+                    pubdate = year + "/" + month + "/" + day # + " 00:00"
+                    #pubdate = datetime.datetime.strptime(pubdate, '%Y/%m/%d %H:%M')
                     print("PubDate output:", pubdate, " -- year:", year, " month:", month, " day:", day)
             except Exception as e:
                 print("Pub Date Exception: ", e)
@@ -138,16 +139,42 @@ def get_articles_with_details(term, retmax, retmax_iter):
 def create_db(term, retmax, retmax_iter):
     articles = get_articles_with_details(term, retmax, retmax_iter)
 
-    for i in range(len(articles)):
-        if articles[i][2]:
-            Article.objects.create(article_id = articles[i][0],
-            pub_date = articles[i][1],
-            article_title = articles[i][2],
-            article_abstract = articles[i][3],
-            author_list = articles[i][4],
-            keyword_list = articles[i][5],
-            )
+    cleaned_articles = []
+    for art in articles:
+        if art[2]:
+            cleaned_articles.append(art)
 
+    # for i in range(len(articles)):
+    #     try:
+    #         if articles[i][2]:
+    #             Article.objects.create(article_id = articles[i][0],
+    #             pub_date = articles[i][1],
+    #             article_title = articles[i][2],
+    #             article_abstract = articles[i][3],
+    #             author_list = articles[i][4],
+    #             keyword_list = articles[i][5],
+    #             )
+    #     except IntegrityError:
+    #         pass
+
+    # for art in articles:
+    #     try:
+    #         Article(article_id=art[0],
+    #         pub_date=art[1],
+    #        article_title=art[2],
+    #        article_abstract = art[3],
+    #        author_list = art[4],
+    #        keyword_list = art[5]).save()
+    #     except IntegrityError:
+    #         pass
+    
+    Article.objects.bulk_create([Article(**{'article_id': a[0],
+                                            'pub_date': a[1],
+                                            'article_title': a[2],
+                                            'article_abstract': a[3],
+                                            'author_list': a[4],
+                                            'keyword_list': a[5]})
+                                        for a in cleaned_articles],  ignore_conflicts=True)
 
     query_result = Article.objects.all()
 
@@ -174,6 +201,7 @@ def update_db(term, retmax):
 # from medicles.models import Article 
 # from medicles import services 
 # db = services 
+# db.create_db('stress disorder',1000,400)
 # db.get_articles_from_db() 
 
 class Wikidata():
@@ -189,7 +217,7 @@ class Wikidata():
         results = []
         for tag in tag_list['search']:
             #if len(tag['label'].split()) < 4:
-                results.append(tag['label'] + " : " + tag['id'])
+                results.append(tag['label'] + " : " + tag['description']  +" : " + tag['id'])
             #print(tag)
         return results
         

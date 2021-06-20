@@ -106,7 +106,7 @@ form.example::after {
 
 <div class="topnav" id="myTopnav">
   <a class="active" href="{% url 'medicles:index' %}"><i class="fa fa-fw fa-home"></i> Home</a>
-  <a href="#"><i class="fa fa-fw fa-search"></i> Search</a>
+  <a href="{% url 'medicles:index' %}"><i class="fa fa-fw fa-search"></i> Search</a>
   {% if user.is_authenticated %}
     <a>
           Hi {{ user.username }}!
@@ -123,12 +123,13 @@ form.example::after {
 </div>
 
 <div class="w3-margin">
-<h1 class="w3-container">Specific Article</h1>
+<h2 class="w3-container">Specific Article</h2>
 
     <div class="w3-container">
         
-        <h2 class="w3-text-teal"><a href="{% url 'medicles:detail' article.article_id %}">{{ article.article_title}}</h2>
-        <h5><a class="w3-text-gray"><strong>PMID</strong>: {{article.article_id}}</a></h5>
+        <h3 class="w3-text-teal"><a href="{% url 'medicles:detail' article.article_id %}">{{ article.article_title}}</h3>
+        <h6><a class="w3-text-gray"><strong>PMID</strong>: {{article.article_id}}  <strong>Publish Date: </strong>: {{article.pub_date}}</a></h6>
+        <h6><a class="w3-text-gray"><strong>Author List</strong>: {{article.author_list}}</a></h6>
         <p>{{article.article_abstract}}</p>
         <p><strong>Tags:</strong>
         {% for tag_obj in article.tag_set.all %}
@@ -146,13 +147,16 @@ form.example::after {
     {% csrf_token %}
     <div class="w3-margin-left w3-padding-24">
     
-    <label for="tag_key"><b></b></label>
-    <input type="text" placeholder="Search tag from Wikidata.." name="tag_key" id="id_tag_key" class="w3-left-align w3-button w3-white w3-border w3-border-teal w3-round-xxlarge w3-hover-gray" style="width:60%">
-    <br><br>
     <label for="user_def_tag_key"><b></b></label>
     <input type="text" placeholder="Enter tag name or leave it empty for Wikidata tags.." name="user_def_tag_key" id="id_user_def_tag_key" class="w3-left-align w3-button w3-white w3-border w3-border-teal w3-round-xxlarge w3-hover-gray" style="width:60%">
     
+    <br><br>
+    <label for="tag_key"><b></b></label>
+    <input type="text" placeholder="Search tag from Wikidata.." name="tag_key" id="id_tag_key" class="w3-left-align w3-button w3-white w3-border w3-border-teal w3-round-xxlarge w3-hover-gray" style="width:60%">
+    
+  
     <input type="submit" value="Add" class="w3-teal w3-button w3-round-xxlarge" style="width:10%">
+    <br><br><br><br><br><br><br><br><br><br>
     </div>
 </form>
 {% else %}

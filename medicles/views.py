@@ -23,7 +23,8 @@ def search(request):
     search_term = request.GET.get('q', None)
     #search_term = 'covid'
     if not search_term:
-        raise Http404('Please enter a word at least!')
+        render(request, 'medicles/index.html')
+        #raise Http404('Please enter a word at least!')
     
     articles = Article.objects.search(search_term)
     context = {'articles': articles}
@@ -70,13 +71,14 @@ def add_tag(request, article_id):
             user_will_be_updated = User.objects.get(pk=request.user.id)  # Gets the user that will be associated
             print(request.user.id)
             tag_request_from_browser = form.cleaned_data['tag_key'].split(':')
+            print(tag_request_from_browser)
             tag_key = tag_request_from_browser[0]
             user_def_tag_key = form.cleaned_data['user_def_tag_key']
             
             # If Wikidata tag_key and user defined user_def_tag_key exists. It will create user_def_tag_key.
             if tag_key and user_def_tag_key:
                 try:
-                    tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[1]
+                    tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[2]
                     # tag = Tag(tag_key = form.cleaned_data['tag_key'],
                     #         tag_value = form.cleaned_data['tag_value']
                     #         )
@@ -93,7 +95,7 @@ def add_tag(request, article_id):
             # If user_def_tag_key does not exist. It will create Wikidata tag_key.
             elif not user_def_tag_key:
                 try:
-                    tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[1]
+                    tag_value = 'http://www.wikidata.org/wiki/' + tag_request_from_browser[2]
                     # tag = Tag(tag_key = form.cleaned_data['tag_key'],
                     #         tag_value = form.cleaned_data['tag_value']
                     #         )

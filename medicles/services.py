@@ -44,7 +44,7 @@ def get_articles_with_details(term, retmax, retmax_iter):
 
 
         url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id="+articles_id+"&rettype=abstract"
-        print(url)
+        #print(url)
         payload={}
         headers = {}
         response = requests.request("POST", url, headers=headers, data=payload)
@@ -120,7 +120,7 @@ def get_articles_with_details(term, retmax, retmax_iter):
                     day = str(date2.find("Day").text)
                     pubdate = year + "/" + month + "/" + day # + " 00:00"
                     #pubdate = datetime.datetime.strptime(pubdate, '%Y/%m/%d %H:%M')
-                    print("PubDate output:", pubdate, " -- year:", year, " month:", month, " day:", day)
+                    #print("PubDate output:", pubdate, " -- year:", year, " month:", month, " day:", day)
             except Exception as e:
                 print("Pub Date Exception: ", e)
                 continue
@@ -168,14 +168,35 @@ def create_db(term, retmax, retmax_iter):
     #     except IntegrityError:
     #         pass
     
-    Article.objects.bulk_create([Article(**{'article_id': a[0],
-                                            'pub_date': a[1],
-                                            'article_title': a[2],
-                                            'article_abstract': a[3],
-                                            'author_list': a[4],
-                                            'keyword_list': a[5]})
-                                        for a in cleaned_articles],  ignore_conflicts=True)
+    start_index = 0
+    end_index = 5000
+    increment = end_index
+    iter = len(cleaned_articles) / end_index
+    i = 0
+    div_articles = []
+    while(i < iter):
+        print('Iteration: ', i)
+        if end_index > len(cleaned_articles):
+            end_index = len(cleaned_articles)
+        try:
+            print('div_articles['+str(start_index)+':'+str(end_index)+']')
+        except:
+            pass
+        div_articles = cleaned_articles[start_index:end_index]
+        start_index += increment
+        end_index += increment
+        if end_index > len(cleaned_articles):
+            end_index = len(cleaned_articles)
+        i +=1
 
+        Article.objects.bulk_create([Article(**{'article_id': a[0],
+                                                'pub_date': a[1],
+                                                'article_title': a[2],
+                                                'article_abstract': a[3],
+                                                'author_list': a[4],
+                                                'keyword_list': a[5]})
+                                            for a in div_articles],  ignore_conflicts=True)
+        print(Article.objects.all().count(), ' articles are written into database.')
     query_result = Article.objects.all()
 
     return query_result
@@ -199,9 +220,9 @@ def update_db(term, retmax):
 #update_db()
 
 # from medicles.models import Article 
-# from medicles import services 
+# from medicles import services
 # db = services 
-# db.create_db('stress disorder',1000,400)
+# db.create_db('stress disorder',60000,400)
 # db.get_articles_from_db() 
 
 class Wikidata():

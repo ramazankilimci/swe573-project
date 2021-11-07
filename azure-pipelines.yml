@@ -1,7 +1,7 @@
 trigger:
 - main
 
-pool: azure pipelines
+pool: Default
 
 steps:
 - task: DockerCompose@0
